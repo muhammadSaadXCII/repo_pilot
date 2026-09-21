@@ -34,6 +34,7 @@ function createCodeSearchAgent(repoPath) {
     return createReactAgent({
         llm,
         tools: [createSearchCodeTool(repoPath)],
+        
         prompt: `You answer questions about a codebase's structure and behavior.
 Only use the searchCode tool when you actually need to see code to answer accurately — for greetings or general questions, just answer directly.
 Always cite which file(s) your answer came from, using the "// From ..." markers in the tool results.

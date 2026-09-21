@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { embeddings } = require("./llm");
-const { HNSWLib } = require("@langchain/community/vectorstores/hnswlib");
+const { Chroma } = require("@langchain/community/vectorstores/chroma");
 const { RecursiveCharacterTextSplitter } = require("@langchain/classic/text_splitter");
 
 function getAllCodeFiles(dir, exts = [".js", ".ts", ".jsx", ".tsx"]) {
@@ -16,6 +16,15 @@ function getAllCodeFiles(dir, exts = [".js", ".ts", ".jsx", ".tsx"]) {
         }
     }
     return results;
+}
+
+function repoNameToCollectionName(repoPath) {
+    return repoPath
+        .replace(/[\\/:]/g, "_")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .slice(0, 63)
+        .replace(/^[^a-zA-Z0-9]+/, "")
+        .replace(/[^a-zA-Z0-9]+$/, "") || "repo";
 }
 
 async function chunkFiles(filePaths) {
@@ -33,23 +42,27 @@ async function chunkFiles(filePaths) {
     return docs;
 }
 
-async function buildVectorStore(docs) {
-    const vectorStore = await HNSWLib.fromDocuments(docs, embeddings);
+async function buildVectorStore(docs, repoPath) {
+    const collectionName = repoNameToCollectionName(repoPath);
+    const vectorStore = await Chroma.fromDocuments(docs, embeddings, {
+        collectionName,
+        collectionName,
+        host: "localhost",
+        port: 8000,
+        ssl: false,
+    });
     return vectorStore;
 }
 
 async function buildVectorStoreFromRepo(repoPath) {
     const files = getAllCodeFiles(repoPath);
     const docs = await chunkFiles(files);
-    return await buildVectorStore(docs);
+    return await buildVectorStore(docs, repoPath);
 }
 
-async function saveIndex(vectorStore, repoName) {
-    await vectorStore.save(`./indexes/${repoName}`);
+async function loadIndex(repoPath) {
+    const collectionName = repoNameToCollectionName(repoPath);
+    return new Chroma(embeddings, { collectionName, host: "localhost", port: 8000, ssl: false });
 }
 
-async function loadIndex(repoName) {
-    return await HNSWLib.load(`./indexes/${repoName}`, embeddings);
-}
-
-module.exports = { buildVectorStore, buildVectorStoreFromRepo, saveIndex, loadIndex };
+module.exports = { buildVectorStore, buildVectorStoreFromRepo, loadIndex, repoNameToCollectionName };

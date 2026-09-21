@@ -1,4 +1,4 @@
-const { ChatGroq } = require("@langchain/groq");
+const { ChatAnthropic } = require('@langchain/anthropic');
 const { ChatOpenAI, OpenAIEmbeddings } = require('@langchain/openai');
 
 const llm = new ChatOpenAI({
@@ -6,12 +6,6 @@ const llm = new ChatOpenAI({
     configuration: { baseURL: process.env.OPENROUTER_ENDPOINT },
     apiKey: process.env.OPENROUTER_API_KEY
 });
-
-// const llm = new ChatGroq({
-//     apiKey: process.env.GROQ_API_KEY,
-//     model: "openai/gpt-oss-20b",
-//     temperature: 0.7,
-// });
 
 const embeddings = new OpenAIEmbeddings({
     model: process.env.AI_EMBEDDING_MODEL,

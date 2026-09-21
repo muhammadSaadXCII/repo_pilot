@@ -4,9 +4,10 @@ const { createDocGenAgent, docToMarkdown } = require("./docGenAgent");
 const { createGithubActivityAgent } = require("./githubActivityAgent");
 const { MemorySaver, interrupt, Command } = require("@langchain/langgraph");
 const { StateGraph, Annotation, START, END } = require("@langchain/langgraph");
-const { SqliteSaver } = require("@langchain/langgraph-checkpoint-sqlite");
+// const { SqliteSaver } = require("@langchain/langgraph-checkpoint-sqlite");
 
-const checkpointer = new SqliteSaver.fromConnString('./repopilot-checkpoints.db');
+// const checkpointer = SqliteSaver.fromConnString('./repopilot-checkpoints.db');
+const checkpointer = new MemorySaver();
 
 const SupervisorState = Annotation.Root({
     question: Annotation(),
