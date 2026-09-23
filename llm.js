@@ -1,5 +1,4 @@
-const { ChatAnthropic } = require('@langchain/anthropic');
-const { ChatOpenAI, OpenAIEmbeddings } = require('@langchain/openai');
+import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 
 const llm = new ChatOpenAI({
     model: "openai/gpt-oss-120b",
@@ -13,4 +12,4 @@ const embeddings = new OpenAIEmbeddings({
     apiKey: process.env.OPENROUTER_API_KEY
 });
 
-module.exports = { llm, embeddings };
+export { llm, embeddings };

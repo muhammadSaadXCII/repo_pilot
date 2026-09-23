@@ -1,8 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const { embeddings } = require("./llm");
-const { Chroma } = require("@langchain/community/vectorstores/chroma");
-const { RecursiveCharacterTextSplitter } = require("@langchain/classic/text_splitter");
+import fs from 'fs';
+import path from 'path';
+import { embeddings } from './llm.js';
+import { Chroma } from '@langchain/community/vectorstores/chroma';
+import { RecursiveCharacterTextSplitter } from '@langchain/classic/text_splitter';
 
 function getAllCodeFiles(dir, exts = [".js", ".ts", ".jsx", ".tsx"]) {
     let results = [];
@@ -46,7 +46,6 @@ async function buildVectorStore(docs, repoPath) {
     const collectionName = repoNameToCollectionName(repoPath);
     const vectorStore = await Chroma.fromDocuments(docs, embeddings, {
         collectionName,
-        collectionName,
         host: "localhost",
         port: 8000,
         ssl: false,
@@ -65,4 +64,8 @@ async function loadIndex(repoPath) {
     return new Chroma(embeddings, { collectionName, host: "localhost", port: 8000, ssl: false });
 }
 
-module.exports = { buildVectorStore, buildVectorStoreFromRepo, loadIndex, repoNameToCollectionName };
+function buildThreadId(userId, owner, repo) {
+    return `${userId}:${owner}/${repo}`;
+}
+
+export { buildVectorStore, buildVectorStoreFromRepo, loadIndex, repoNameToCollectionName, buildThreadId };
