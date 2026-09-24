@@ -1,4 +1,5 @@
 import z from "zod";
+import fs from 'fs';
 import { llm } from './llm.js';
 import { createCodeSearchAgent } from './agents/codeSearchAgent.js';
 import { SqliteSaver } from "@langchain/langgraph-checkpoint-sqlite";
@@ -67,7 +68,8 @@ async function routeQuestion(state) {
         },
         { role: "user", content: state.question },
     ]);
-    
+    console.log(result.route);
+
     return result.route;
 }
 
@@ -119,7 +121,7 @@ async function writeDocNode(state) {
     if (!state.approved) {
         return { answer: "Doc generation cancelled — not approved." };
     }
-    const fs = require("fs");
+
     const outPath = `./generated-docs/${Date.now()}-onboarding.md`;
     fs.mkdirSync("./generated-docs", { recursive: true });
     fs.writeFileSync(outPath, state.generatedDoc);

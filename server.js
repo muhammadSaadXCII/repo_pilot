@@ -74,8 +74,9 @@ async function handleInterrupt(response) {
         await handleInterrupt(resumed);
         return;
     }
-
-    console.log(`\nAssistant: ${response.answer}\n`);
+    console.log(response);
+    
+    console.log(`\n🤖: ${response.answer}\n`);
     // for await (const [messageChunk] of response) {
     //     if (messageChunk.content) process.stdout.write(messageChunk.content);
     // }

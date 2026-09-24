@@ -2,12 +2,16 @@ import z from "zod";
 import { llm } from "../llm.js";
 import { tool } from "@langchain/core/tools";
 import { requestHumanApproval } from "../tools.js";
+import { buildVectorStoreFromRepo } from '../indexRepo.js'
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
 let vectorStorePromise = null;
 function getVectorStore(repoPath) {
     if (!vectorStorePromise) {
-        vectorStorePromise = buildVectorStoreFromRepo(repoPath);
+        vectorStorePromise = buildVectorStoreFromRepo(repoPath).catch((err) => {
+            vectorStorePromise = null;
+            throw err;
+        });
     }
     return vectorStorePromise;
 }
